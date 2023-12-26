@@ -6,25 +6,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import os
-from elasticsearch import Elasticsearch
 
 
 
-ELASTIC_PASSWORD = "u+57PJ9fhhtP4ayv_wE1"
-index_name="ap_news"
-
-client = Elasticsearch(
-    "https://localhost:9200",
-    ca_certs="C:\\ElasticKibana\\kibana-8.11.3\\data\\ca_1702548513853.crt",
-    basic_auth=("elastic", ELASTIC_PASSWORD)
-)
-
-print(client.ping())
-
-
-def scrape_apnews_data():
+def scrape_ap_news():
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('executable_path=C:\\Users\\3441\\Web-scrapping\\chromedriver.exe')
+    chrome_options.add_argument('executable_path=C:\\Users\\3441\\Web-scrapping\\drivers\\chromedriver.exe')
 
     driver = webdriver.Chrome(options=chrome_options)
     driver.maximize_window()
@@ -93,17 +80,6 @@ def scrape_apnews_data():
 
             json_data_list.append(metadata)
 
-    with open(os.path.join('data', 'apnews_data.json'), 'w') as json_file:
+    with open(os.path.join('data', 'ap_news.json'), 'w') as json_file:
         json.dump(json_data_list, json_file, indent=2)
 
-if __name__ == "__main__":
-    scrape_apnews_data()
-
-
-with open("data/apnews_data.json","r") as f:
-    json_objects = json.load(f)
-    f.close() 
- 
-for json_doc in json_objects:
-    doc_id=json_doc['url']
-    response = client.index(index=index_name, body=json_doc, id=doc_id)
